@@ -1,5 +1,6 @@
 #include <SoftwareSerial.h>
 #include "Logger.h"
+#include "Wifi.h"
 
 SoftwareSerial ESPserial(2, 3); // RX | TX
 Logger logger = Logger();
@@ -8,14 +9,10 @@ static int DEBUG = 1;
 
 void setup()
 {
-  //Serial.begin(9600);     // communication with the host computer
-
   logger.Initialize();
   ESPserial.begin(115200);
-  //ESPserial.setTimeout(5000);
 
   logger.setDebug(true);
-  //logger.Log(Debug, "test_wifi", "setup: isDebug: %d (%s)", logger.getDebug(), logger.getDebug() ? "true" : "false");
   logger.Log(Info, "test_wifi", "setup: ok");
 }
 bool _manual = false;
@@ -27,7 +24,7 @@ void loop()
       String cmd = Serial.readString();
 
       logger.Log(Debug, "loop", "buf: %s, %d", cmd.c_str(), cmd.length());
-      //free(buf);
+      
       if (cmd.indexOf("init") >= 0) Initialize();
       else if (cmd.indexOf("manual") >= 0) SetManual(cmd);
       else if (cmd.indexOf("connect") >= 0) Connect();
@@ -81,7 +78,6 @@ bool Connect() {
   return result;
 }
 
-
 void SetManual(String command) {
   String paramString = command.substring(sizeof("manual")) ;
   paramString.trim();
@@ -99,8 +95,6 @@ void SetManual(String command) {
 
     logger.Log(Info, "SetManual", "Setting manual to -> %d", manual);
   }
-
-
 }
 
 bool SetTimeout(String command) {
@@ -164,9 +158,7 @@ bool SendCommand(String command) {
       String dataRead = ESPserial.readString();
 
       logger.Log(Debug, "SendCommand", "ESPserial.readString(): %s", dataRead.c_str());
-
-      dataRead.toUpperCase();
-
+  
       if (dataRead.indexOf("OK") >= 0) {
         success = true;
         break;
@@ -180,6 +172,7 @@ bool SendCommand(String command) {
 
 bool WriteCommand(String command) {
   //TODO: I need to write and wait for the timeout because if not I lose information
+  //TODO: Check changing print by println
   command += "\r\n";
 
   int length = command.length();

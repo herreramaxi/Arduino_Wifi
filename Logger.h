@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 
+//TODO: Check if it is possible to put inside of the class
 enum LogType {Debug, Info, Warning, Error};
 static const char LogTypeString[4][10] = {"Debug", "Info", "Warning", "Error"};
      
